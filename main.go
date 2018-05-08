@@ -22,8 +22,8 @@ func parseFileContent(content []byte) []string {
 }
 
 func convertToFileNames(argument string) []string {
-	data, err := ioutil.ReadFile(argument)
-	if err == nil && data != nil {
+	data, _ := ioutil.ReadFile(argument)
+	if data != nil {
 		return
 	}
 
