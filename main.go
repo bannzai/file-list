@@ -41,15 +41,21 @@ func main() {
 
 	flag.Usage = func() {
 		name := os.Args[0]
-		fmt.Fprintf(os.Stderr, `
+		fmt.Fprintf(
+			os.Stderr, `
 Usage of %s: 
-%s [OPTIONS] ARGS...
-Options \n
-		`,
+%s [DIRECTORY] ARGS...
+Options: 
+	ignore-list                 "Do not output file-list"
+	only-list                   "Show only file-list"
+	ignore-with-file            "Do not output file-list"
+	only-with-file              "Show only file-list" 
+	 `,
 			name,
 			name,
 		)
 		flag.PrintDefaults()
+		os.Exit(0)
 	}
 	flag.Parse()
 
