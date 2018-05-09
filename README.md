@@ -39,3 +39,9 @@ Options:
 ```
 $ go get github.com/bannzai/file-list
 ```
+
+## UseCase
+
+```
+$ file-list example | xargs rm
+```
