@@ -101,6 +101,9 @@ Options:
 
 	var files []string
 	for _, f := range directory {
+		if f.IsDir() {
+			continue
+		}
 		fileName := f.Name()
 
 		if contains(ignore, fileName) {
