@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 func contains(array []string, s string) bool {
@@ -17,36 +19,32 @@ func contains(array []string, s string) bool {
 	return false
 }
 
-func parseFileContent(content []byte) []string {
-	return split(string(content), "\n")
+func parseFileContent(filePath string) []string {
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		panic(errors.Wrap(err, "Failed read file"))
+	}
+	return split(string(data), "\n")
 }
 
 func split(content string, separator string) []string {
 	return strings.Split(content, separator)
 }
 
-func convertToFileNames(argument string) []string {
-	data, _ := ioutil.ReadFile(argument)
-	if data != nil {
-		return parseFileContent(data)
-	}
-	return split(argument, ",")
-}
-
 func main() {
 	var (
-		ignore string
-		only   string
+		ignoreWithFile string
+		ignoreList     string
+		onlyWithFile   string
+		onlyList       string
 	)
 
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	fs.StringVar(&ignore, "ignore", "", "Do not output file-list")
-	fs.StringVar(&only, "only", "", "Show only file-list.")
+	fs.StringVar(&ignoreList, "ignore-list", "", "Do not output file-list")
+	fs.StringVar(&onlyList, "only-list", "", "Show only file-list.")
+	fs.StringVar(&ignoreWithFile, "ignore-with-file", "", "Do not output file-list")
+	fs.StringVar(&onlyWithFile, "only-with-file", "", "Show only file-list.")
 	fs.Parse(os.Args[2:])
-
-	fmt.Printf("os.Args() = %+v\n", os.Args)
-	fmt.Printf("ignore = %+v\n", ignore)
-	fmt.Printf("only = %+v\n", only)
 
 	if len(os.Args) < 2 {
 		panic("Should specifity directory. e.g file-list /path/to/directory")
@@ -57,14 +55,25 @@ func main() {
 		panic(fmt.Errorf("Can not read directory: %v", os.Args[1]))
 	}
 
-	ignoreFiles := convertToFileNames(ignore)
-	onlyFiles := convertToFileNames(only)
+	var ignore []string
+	var only []string
+
+	if len(ignoreList) > 0 {
+		ignore = append(ignore, split(ignoreList, ",")...)
+	}
+	if len(onlyList) > 0 {
+		only = append(only, split(onlyList, ",")...)
+	}
+	if len(ignoreWithFile) > 0 {
+		ignore = append(ignore, parseFileContent(ignoreWithFile)...)
+	}
+	if len(onlyWithFile) > 0 {
+		only = append(only, parseFileContent(onlyWithFile)...)
+	}
+
 	hasIgnore := len(ignore) > 0
 	hasOnly := len(only) > 0
 
-	fmt.Printf("ignoreFiles = %+v\n", ignoreFiles)
-	fmt.Printf("hasIgnore = %+v\n", hasIgnore)
-	fmt.Printf("hasOnly = %+v\n", hasOnly)
 	if hasIgnore && hasOnly {
 		panic("Can not be shared option. --ignore and --only")
 	}
@@ -73,16 +82,19 @@ func main() {
 	for _, f := range directory {
 		fileName := f.Name()
 
-		if contains(ignoreFiles, fileName) {
+		if contains(ignore, fileName) {
 			continue
 		}
 
-		if hasOnly && contains(onlyFiles, fileName) {
+		if !hasOnly {
 			files = append(files, fileName)
 			continue
 		}
 
-		files = append(files, fileName)
+		if contains(only, fileName) {
+			files = append(files, fileName)
+			continue
+		}
 	}
 
 	fmt.Printf("files = %+v\n", files)
