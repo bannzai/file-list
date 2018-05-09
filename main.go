@@ -39,6 +39,20 @@ func main() {
 		onlyList       string
 	)
 
+	flag.Usage = func() {
+		name := os.Args[0]
+		fmt.Fprintf(os.Stderr, `
+Usage of %s: 
+%s [OPTIONS] ARGS...
+Options \n
+		`,
+			name,
+			name,
+		)
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	fs.StringVar(&ignoreList, "ignore-list", "", "Do not output file-list")
 	fs.StringVar(&onlyList, "only-list", "", "Show only file-list.")
