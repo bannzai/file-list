@@ -50,9 +50,10 @@ func main() {
 		panic("Should specifity directory. e.g file-list /path/to/directory")
 	}
 
-	directory, err := ioutil.ReadDir(os.Args[1])
+	dirName := os.Args[1]
+	directory, err := ioutil.ReadDir(dirName)
 	if err != nil {
-		panic(fmt.Errorf("Can not read directory: %v", os.Args[1]))
+		panic(fmt.Errorf("Can not read directory: %v", dirName))
 	}
 
 	var ignore []string
@@ -97,5 +98,7 @@ func main() {
 		}
 	}
 
-	fmt.Printf("files = %+v\n", files)
+	for _, file := range files {
+		fmt.Printf("%+v/%+v\n", dirName, file)
+	}
 }
