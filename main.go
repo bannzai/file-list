@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -70,12 +71,6 @@ Options:
 		panic("Should specifity directory. e.g file-list /path/to/directory")
 	}
 
-	dirName := os.Args[1]
-	directory, err := ioutil.ReadDir(dirName)
-	if err != nil {
-		panic(fmt.Errorf("Can not read directory: %v", dirName))
-	}
-
 	var ignore []string
 	var only []string
 
@@ -99,26 +94,34 @@ Options:
 		panic("Can not be shared option. --ignore and --only")
 	}
 
+	dirName := os.Args[1]
+
 	var files []string
-	for _, f := range directory {
-		if f.IsDir() {
-			continue
+	err := filepath.Walk(dirName, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return errors.Wrap(err, fmt.Sprintf("Can not read directory: %v, info: %v", dirName, info))
 		}
-		fileName := f.Name()
-
+		if info.IsDir() {
+			return nil
+		}
+		fileName := info.Name()
 		if contains(ignore, fileName) {
-			continue
+			return nil
 		}
-
 		if !hasOnly {
 			files = append(files, fileName)
-			continue
+			return nil
 		}
-
 		if contains(only, fileName) {
 			files = append(files, fileName)
-			continue
+			return nil
 		}
+
+		return nil
+	})
+
+	if err != nil {
+		panic(err)
 	}
 
 	for _, file := range files {
