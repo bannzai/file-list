@@ -101,17 +101,26 @@ Options:
 		if err != nil {
 			return errors.Wrap(err, fmt.Sprintf("Can not read directory: %v, info: %v", dirName, info))
 		}
+
+		dir := filepath.Dir(path)
+		if dir != dirName {
+			return nil
+		}
+
 		if info.IsDir() {
 			return nil
 		}
-		fileName := info.Name()
+
+		fileName := filepath.Join(dir, info.Name())
 		if contains(ignore, fileName) {
 			return nil
 		}
+
 		if !hasOnly {
 			files = append(files, fileName)
 			return nil
 		}
+
 		if contains(only, fileName) {
 			files = append(files, fileName)
 			return nil
@@ -125,6 +134,6 @@ Options:
 	}
 
 	for _, file := range files {
-		fmt.Printf("%+v/%+v\n", dirName, file)
+		fmt.Printf("%+v\n", file)
 	}
 }
