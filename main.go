@@ -102,16 +102,11 @@ Options:
 			return errors.Wrap(err, fmt.Sprintf("Can not read directory: %v, info: %v", dirName, info))
 		}
 
-		dir := filepath.Dir(path)
-		if dir != dirName {
-			return nil
-		}
-
 		if info.IsDir() {
 			return nil
 		}
 
-		fileName := filepath.Join(dir, info.Name())
+		fileName := filepath.Join(dirName, info.Name())
 		if contains(ignore, fileName) {
 			return nil
 		}
