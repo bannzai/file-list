@@ -1,2 +1,2 @@
-aaa.txt
+example/aaa.txt
 ccc.txt

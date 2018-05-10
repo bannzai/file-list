@@ -16,7 +16,7 @@ example/files.txt
 ### with option
 
 ```
-$ file-list example --ignore-list aaa.txt,bbb.txt
+$ file-list example --ignore-list example/aaa.txt,example/bbb.txt
 example/ccc.txt
 example/ddd.txt
 example/files.txt
