@@ -94,7 +94,7 @@ Options:
 		panic("Can not be shared option. --ignore and --only")
 	}
 
-	dirName := os.Args[1]
+	dirName := filepath.Dir(os.Args[1] + "/")
 
 	var files []string
 	err := filepath.Walk(dirName, func(path string, info os.FileInfo, err error) error {
@@ -103,6 +103,11 @@ Options:
 		}
 
 		if info.IsDir() {
+			return nil
+		}
+
+		dir := filepath.Dir(path)
+		if dir != dirName {
 			return nil
 		}
 
