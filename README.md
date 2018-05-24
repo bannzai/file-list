@@ -22,6 +22,19 @@ example/ddd.txt
 example/files.txt
 ```
 
+Or pass file for wrote ignore output files.
+This example ignored `example/aaa.txt`
+```
+$ file-list example --ignore-with-file example/files.txt
+example/bbb.txt
+example/ccc.txt
+example/ddd.txt
+example/files.txt
+
+$ cat example/files.txt
+example/aaa.txt
+```
+
 ### all option
 
 ```
