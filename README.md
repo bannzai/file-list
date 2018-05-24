@@ -37,7 +37,7 @@ Options:
 ## Install
 
 ```
-$ go get github.com/bannzai/file-list
+$ go get -u github.com/bannzai/file-list
 ```
 
 ## UseCase
